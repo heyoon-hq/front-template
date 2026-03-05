@@ -1,0 +1,58 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx prettier --write $CLAUDE_FILE_PATH 2>/dev/null || true",
+            "async": true
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_FILE_PATH\" | grep -qE '\\.(ts|tsx)$'; then npx tsc --noEmit 2>&1 | head -20; fi",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "RESULT=$(echo \"$CLAUDE_TOOL_INPUT\" | grep -cE 'rm -rf|git reset --hard|git push --force|drop table|DROP TABLE' || true); if [ \"$RESULT\" -gt 0 ]; then echo '{\"decision\": \"block\", \"reason\": \"위험한 명령어가 감지되었습니다. 사용자에게 먼저 확인하세요.\"}'; exit 1; fi"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(pnpm run:*)",
+      "Bash(pnpm dev)",
+      "Bash(pnpm build)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm typecheck)",
+      "Bash(pnpm prisma:*)",
+      "Bash(pnpm prisma generate)",
+      "Bash(pnpm prisma migrate dev:*)",
+      "Bash(pnpm dlx:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npx prettier:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
