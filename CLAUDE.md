@@ -44,8 +44,12 @@ npx tsc --noEmit              # 타입 체크
 app/                              # 라우팅 + 페이지
   providers.tsx                   # QueryClientProvider
   layout.tsx                      # Providers 래핑
+  (main)/                         # Route Group (도메인별 페이지)
+    layout.tsx                    # 공통 네비게이션
+    {domain}/page.tsx             # 도메인 페이지
 components/
   ui/                             # shadcn/ui (자동 생성, 직접 수정 지양)
+  layout/                         # 공통 레이아웃 컴포넌트
   {feature}/                      # 기능별 컴포넌트
 hooks/                            # TanStack Query 훅
   use-{feature}.ts                # useQuery + useMutation
@@ -85,6 +89,7 @@ prisma/
 경로별 패턴: `.claude/rules/patterns/` (해당 경로 작업 시 자동 로드)
 
 요약:
+- Page: `patterns/page.md` (페이지 타이틀 + 컨테이너)
 - Server Actions: `server/actions/todo.ts` (ActionResult + safeParse)
 - Validation: `lib/validations/todo.ts` (z.object + safeParse + 한국어 메시지)
 - TanStack Query: `hooks/use-todos.ts` (useQuery + useMutation + 낙관적 업데이트)
