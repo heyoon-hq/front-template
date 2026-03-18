@@ -56,7 +56,9 @@ lib/
   validations/{feature}.ts        # Zod 스키마
   utils.ts                        # cn 등 공유 유틸
 prisma/
-  schema.prisma                   # DB 스키마
+  schema/                           # DB 스키마 (멀티파일)
+    base.prisma                     # generator + datasource
+    {model}.prisma                  # 도메인별 모델 (1파일 1도메인)
 ```
 
 ## IMPORTANT: 기능 구현 레시피
@@ -64,7 +66,7 @@ prisma/
 새 기능 "{feature}" 구현 시 아래 순서를 따른다.
 
 ### 파일 생성 순서
-1. `prisma/schema.prisma` — model 추가 → `npx prisma migrate dev`
+1. `prisma/schema/{model}.prisma` — model 파일 생성 → `npx prisma migrate dev`
 2. `lib/validations/{feature}.ts` — Zod 스키마
 3. `server/actions/{feature}.ts` — Server Actions (read + CRUD)
 4. `components/ui/` 확인 → 미설치 시 `pnpm dlx shadcn@latest add {컴포넌트}`

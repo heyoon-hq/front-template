@@ -1,0 +1,10 @@
+model Todo {
+  id         String    @id @default(cuid())
+  title      String
+  completed  Boolean   @default(false)
+  dueDate    DateTime?
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}

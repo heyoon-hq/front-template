@@ -89,6 +89,15 @@ http://localhost:3000 에서 확인
 - Docker Desktop 앱이 실행 중인지 확인
 - Windows: Docker Desktop 설정 > General > "Use Docker Compose V2" 체크
 
+**`permission denied while trying to connect to the docker API` 에러 (WSL)**
+- **원인**: WSL에서 Docker 데몬에 접근할 수 없음
+- **해결**:
+  1. Windows에서 Docker Desktop 실행
+  2. Docker Desktop > Settings > Resources > WSL Integration
+  3. "Enable integration with my default WSL distro" 체크
+  4. 사용 중인 WSL 배포판(Ubuntu 등) 활성화
+  5. WSL 터미널 재시작 후 `docker compose up -d` 재실행
+
 **포트 5432가 이미 사용 중**
 - 로컬에 PostgreSQL이 이미 설치되어 있는 경우
 - macOS: `brew services stop postgresql`

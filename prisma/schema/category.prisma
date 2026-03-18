@@ -1,0 +1,7 @@
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  color     String   @default("#6B7280")
+  todos     Todo[]
+  createdAt DateTime @default(now())
+}

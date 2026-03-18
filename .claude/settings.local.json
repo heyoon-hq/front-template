@@ -1,4 +1,27 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(pnpm run:*)",
+      "Bash(pnpm dev)",
+      "Bash(pnpm build)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm typecheck)",
+      "Bash(pnpm prisma:*)",
+      "Bash(pnpm prisma generate)",
+      "Bash(pnpm prisma migrate dev:*)",
+      "Bash(pnpm dlx:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npx prettier:*)",
+      "WebSearch",
+      "WebFetch(domain:www.prisma.io)"
+    ],
+    "deny": [],
+    "ask": []
+  },
   "hooks": {
     "PostToolUse": [
       {
@@ -33,26 +56,5 @@
         ]
       }
     ]
-  },
-  "permissions": {
-    "allow": [
-      "Bash(pnpm run:*)",
-      "Bash(pnpm dev)",
-      "Bash(pnpm build)",
-      "Bash(pnpm test:*)",
-      "Bash(pnpm lint:*)",
-      "Bash(pnpm typecheck)",
-      "Bash(pnpm prisma:*)",
-      "Bash(pnpm prisma generate)",
-      "Bash(pnpm prisma migrate dev:*)",
-      "Bash(pnpm dlx:*)",
-      "Bash(pnpm add:*)",
-      "Bash(pnpm remove:*)",
-      "Bash(npx tsc:*)",
-      "Bash(npx prisma:*)",
-      "Bash(npx prettier:*)"
-    ],
-    "deny": [],
-    "ask": []
   }
 }

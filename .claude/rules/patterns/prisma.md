@@ -32,6 +32,14 @@ model Example {
 - `enum` 사용 금지 → String 필드 + Zod 검증으로 대체
 - PrismaClient 직접 생성 금지 → `@/server/db/prisma` import 사용
 
+## 멀티파일 스키마
+- 스키마 디렉토리: `prisma/schema/` (멀티파일 구조)
+- `base.prisma`: generator + datasource 블록만 포함
+- 모델 파일: 도메인별 1파일 1모델 (예: `todo.prisma`, `category.prisma`)
+- 파일명: 모델명의 kebab-case 소문자 (예: `user-profile.prisma`)
+- 파일 간 모델 참조 시 import 불필요 (Prisma가 자동 해석)
+- 새 모델 추가: `prisma/schema/{model-name}.prisma` 파일 생성
+
 ## 타입 활용
 - `import type { Todo } from "@prisma/client"` — 모델 타입 직접 사용 가능
 - 관계 포함 타입은 Server Action 반환값에서 추론
