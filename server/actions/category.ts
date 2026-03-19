@@ -1,60 +1,54 @@
 "use server"
 
-import { prisma } from "@/server/db/prisma"
-import {
-  createCategorySchema,
-  updateCategorySchema,
-  deleteCategorySchema,
-} from "@/lib/validations/category"
+import { CategoryService } from "@/server/services/category.service"
+import { deleteCategorySchema } from "@/lib/validations/category"
 
 type ActionResult = { success: true } | { success: false; error: string }
 
 export async function getCategories() {
-  return prisma.category.findMany({
-    orderBy: { createdAt: "asc" },
-  })
+  return CategoryService.findAll()
 }
 
 export async function createCategory(formData: FormData): Promise<ActionResult> {
-  const parsed = createCategorySchema.safeParse({
-    name: formData.get("name"),
-    color: formData.get("color") || undefined,
-  })
+  const nameValue = formData.get("name")
+  const colorValue = formData.get("color")
 
-  if (!parsed.success) {
-    return { success: false, error: parsed.error.issues[0].message }
+  if (!nameValue) {
+    return { success: false, error: "이름을 입력해주세요" }
   }
 
   try {
-    await prisma.category.create({
-      data: { name: parsed.data.name, color: parsed.data.color },
-    })
+    const data: { name: string; color?: string } = {
+      name: String(nameValue),
+    }
+    if (colorValue) {
+      data.color = String(colorValue)
+    }
+
+    await CategoryService.create(data)
 
     return { success: true }
-  } catch {
-    return { success: false, error: "이미 존재하는 카테고리입니다" }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "이미 존재하는 카테고리입니다",
+    }
   }
 }
 
 export async function updateCategory(
   data: { id: string; name?: string; color?: string }
 ): Promise<ActionResult> {
-  const parsed = updateCategorySchema.safeParse(data)
-
-  if (!parsed.success) {
-    return { success: false, error: parsed.error.issues[0].message }
-  }
-
   try {
-    const { id, ...updateData } = parsed.data
-    await prisma.category.update({
-      where: { id },
-      data: updateData,
-    })
+    const { id, ...updateData } = data
+    await CategoryService.update(id, updateData)
 
     return { success: true }
-  } catch {
-    return { success: false, error: "카테고리를 찾을 수 없습니다" }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "카테고리를 찾을 수 없습니다",
+    }
   }
 }
 
@@ -68,12 +62,13 @@ export async function deleteCategory(
   }
 
   try {
-    await prisma.category.delete({
-      where: { id: parsed.data.id },
-    })
+    await CategoryService.delete(parsed.data.id)
 
     return { success: true }
-  } catch {
-    return { success: false, error: "카테고리를 찾을 수 없습니다" }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "카테고리를 찾을 수 없습니다",
+    }
   }
 }

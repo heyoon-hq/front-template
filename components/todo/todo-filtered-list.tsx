@@ -1,7 +1,6 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import type { Category } from "@prisma/client"
 import { useTodos } from "@/hooks/use-todos"
 import { useCategories } from "@/hooks/use-categories"
 import { Button } from "@/components/ui/button"
@@ -9,17 +8,28 @@ import { DateGroupHeader } from "./date-group-header"
 import { TodoFilter } from "./todo-filter"
 import { TodoItem } from "./todo-item"
 
+type Category = {
+  id: string
+  name: string
+  color: string
+  createdAt: Date | string
+}
+
 type TodoFilter = "all" | "active" | "completed"
 
 type TodoWithCategory = {
   id: string
   title: string
   completed: boolean
-  dueDate: Date | null
+  dueDate: Date | string | null
   categoryId: string | null
-  category: Category | null
-  createdAt: Date
-  updatedAt: Date
+  category?: {
+    id: string
+    name: string
+    color: string
+  } | null
+  createdAt: Date | string
+  updatedAt: Date | string
 }
 
 type TodoFilteredListProps = {

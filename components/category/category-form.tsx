@@ -22,17 +22,17 @@ export function CategoryForm() {
   const [selectedColor, setSelectedColor] = useState(PRESET_COLORS[6])
 
   async function handleSubmit(formData: FormData) {
-    formData.set("color", selectedColor)
-    const result = await createMutation.mutateAsync(formData)
-    if (result.success) {
-      formRef.current?.reset()
-      setSelectedColor(PRESET_COLORS[6])
-    }
-  }
+    const name = formData.get("name") as string
+    if (!name) return
 
-  const error = createMutation.data && !createMutation.data.success
-    ? createMutation.data.error
-    : null
+    await createMutation.mutateAsync({
+      name,
+      color: selectedColor,
+    })
+
+    formRef.current?.reset()
+    setSelectedColor(PRESET_COLORS[6])
+  }
 
   return (
     <div className="space-y-2">
@@ -67,7 +67,9 @@ export function CategoryForm() {
           {createMutation.isPending ? "..." : "추가"}
         </Button>
       </form>
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {createMutation.error && (
+        <p className="text-sm text-destructive">{createMutation.error.message}</p>
+      )}
     </div>
   )
 }

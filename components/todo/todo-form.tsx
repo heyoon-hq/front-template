@@ -6,13 +6,19 @@ import { ko } from "date-fns/locale"
 import { CalendarIcon } from "lucide-react"
 import { useCreateTodo } from "@/hooks/use-todos"
 import { useCategories } from "@/hooks/use-categories"
-import type { Category } from "@prisma/client"
 import { CategorySelect } from "@/components/category/category-select"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+
+type Category = {
+  id: string
+  name: string
+  color: string
+  createdAt: Date | string
+}
 
 type TodoFormProps = {
   initialCategories: Category[]
@@ -27,21 +33,19 @@ export function TodoForm({ initialCategories }: TodoFormProps) {
   const [calendarOpen, setCalendarOpen] = useState(false)
 
   async function handleSubmit(formData: FormData) {
-    if (categoryId) {
-      formData.set("categoryId", categoryId)
-    }
-    formData.set("dueDate", format(dueDate, "yyyy-MM-dd"))
-    const result = await createTodoMutation.mutateAsync(formData)
-    if (result.success) {
-      formRef.current?.reset()
-      setCategoryId("")
-      setDueDate(new Date())
-    }
-  }
+    const title = formData.get("title") as string
+    if (!title) return
 
-  const error = createTodoMutation.data && !createTodoMutation.data.success
-    ? createTodoMutation.data.error
-    : null
+    await createTodoMutation.mutateAsync({
+      title,
+      categoryId: categoryId || undefined,
+      dueDate: format(dueDate, "yyyy-MM-dd"),
+    })
+
+    formRef.current?.reset()
+    setCategoryId("")
+    setDueDate(new Date())
+  }
 
   return (
     <div className="space-y-2">
@@ -93,8 +97,8 @@ export function TodoForm({ initialCategories }: TodoFormProps) {
           {createTodoMutation.isPending ? "..." : "추가"}
         </Button>
       </form>
-      {error && (
-        <p className="text-sm text-destructive">{error}</p>
+      {createTodoMutation.error && (
+        <p className="text-sm text-destructive">{createTodoMutation.error.message}</p>
       )}
     </div>
   )

@@ -4,8 +4,14 @@ import { useState } from "react"
 import { format } from "date-fns"
 import { ko } from "date-fns/locale"
 import { CalendarIcon } from "lucide-react"
-import type { Category } from "@prisma/client"
 import { useUpdateTodo, useDeleteTodo } from "@/hooks/use-todos"
+
+type Category = {
+  id: string
+  name: string
+  color: string
+  createdAt: Date | string
+}
 import { cn } from "@/lib/utils"
 import { CategoryBadge } from "@/components/category/category-badge"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -25,7 +31,7 @@ type TodoItemProps = {
   id: string
   title: string
   completed: boolean
-  dueDate?: Date | null
+  dueDate?: Date | string | null
   category?: { name: string; color: string } | null
   categoryId?: string | null
   categories?: Category[]
