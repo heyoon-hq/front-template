@@ -42,7 +42,6 @@ export function useCreateCategory() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       })
-      if (!res.ok) throw new Error("Failed to create category")
       const json: ApiResponse<Category> | ApiErrorResponse = await res.json()
       if (!json.success) throw new Error(json.error)
       return json.data
@@ -64,7 +63,6 @@ export function useUpdateCategory() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updateData),
       })
-      if (!res.ok) throw new Error("Failed to update category")
       const json: ApiResponse<Category> | ApiErrorResponse = await res.json()
       if (!json.success) throw new Error(json.error)
       return json.data
@@ -83,7 +81,6 @@ export function useDeleteCategory() {
       const res = await fetch(`/api/categories/${data.id}`, {
         method: "DELETE",
       })
-      if (!res.ok) throw new Error("Failed to delete category")
       const json: ApiResponse<null> | ApiErrorResponse = await res.json()
       if (!json.success) throw new Error(json.error)
       return json.data

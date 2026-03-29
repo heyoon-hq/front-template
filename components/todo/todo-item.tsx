@@ -52,24 +52,29 @@ export function TodoItem({ id, title, completed, dueDate, category, categoryId, 
     deleteMutation.mutate({ id })
   }
 
-  async function handleCategoryChange(value: string) {
+  function handleCategoryChange(value: string) {
     const newCategoryId = value === "none" ? null : value
-    await updateMutation.mutateAsync({ id, categoryId: newCategoryId })
+    updateMutation.mutate({ id, categoryId: newCategoryId })
   }
 
-  async function handleDueDateChange(date: Date | undefined) {
+  function handleDueDateChange(date: Date | undefined) {
     const newDate = date ? format(date, "yyyy-MM-dd") : null
-    await updateMutation.mutateAsync({ id, dueDate: newDate })
-    setCalendarOpen(false)
+    updateMutation.mutate(
+      { id, dueDate: newDate },
+      { onSuccess: () => setCalendarOpen(false) }
+    )
   }
 
-  async function handleEditSubmit() {
+  function handleEditSubmit() {
     if (editTitle.trim() && editTitle !== title) {
-      await updateMutation.mutateAsync({ id, title: editTitle.trim() })
+      updateMutation.mutate(
+        { id, title: editTitle.trim() },
+        { onSuccess: () => setIsEditing(false) }
+      )
     } else {
       setEditTitle(title)
+      setIsEditing(false)
     }
-    setIsEditing(false)
   }
 
   return (

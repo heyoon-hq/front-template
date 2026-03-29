@@ -50,7 +50,6 @@ export function useCreateTodo() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error("Failed to create todo");
       const json: ApiResponse<Todo> | ApiErrorResponse = await res.json();
       if (!json.success) throw new Error(json.error);
       return json.data;
@@ -72,7 +71,6 @@ export function useUpdateTodo() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updateData),
       });
-      if (!res.ok) throw new Error("Failed to update todo");
       const json: ApiResponse<Todo> | ApiErrorResponse = await res.json();
       if (!json.success) throw new Error(json.error);
       return json.data;
@@ -115,7 +113,6 @@ export function useDeleteTodo() {
       const res = await fetch(`/api/todos/${data.id}`, {
         method: "DELETE",
       });
-      if (!res.ok) throw new Error("Failed to delete todo");
       const json: ApiResponse<null> | ApiErrorResponse = await res.json();
       if (!json.success) throw new Error(json.error);
       return json.data;

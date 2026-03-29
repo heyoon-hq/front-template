@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Providers } from "./providers";
+import "@/lib/zod-config";
 import "./globals.css";
 
 export const metadata: Metadata = {

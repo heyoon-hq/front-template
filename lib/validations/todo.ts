@@ -4,7 +4,7 @@ export const createTodoSchema = z.object({
   title: z
     .string()
     .min(1, "할 일을 입력해주세요")
-    .max(200, "200자 이내로 입력해주세요"),
+    .max(200),
   categoryId: z.string().optional(),
   dueDate: z.string().optional(),
 })

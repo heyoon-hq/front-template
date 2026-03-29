@@ -1,3 +1,4 @@
+import "@/lib/zod-config"
 import { prisma } from "@/server/db/prisma"
 import {
   createCategoryDtoSchema,

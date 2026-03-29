@@ -32,19 +32,24 @@ export function TodoForm({ initialCategories }: TodoFormProps) {
   const [dueDate, setDueDate] = useState<Date>(new Date())
   const [calendarOpen, setCalendarOpen] = useState(false)
 
-  async function handleSubmit(formData: FormData) {
+  function handleSubmit(formData: FormData) {
     const title = formData.get("title") as string
     if (!title) return
 
-    await createTodoMutation.mutateAsync({
-      title,
-      categoryId: categoryId || undefined,
-      dueDate: format(dueDate, "yyyy-MM-dd"),
-    })
-
-    formRef.current?.reset()
-    setCategoryId("")
-    setDueDate(new Date())
+    createTodoMutation.mutate(
+      {
+        title,
+        categoryId: categoryId || undefined,
+        dueDate: format(dueDate, "yyyy-MM-dd"),
+      },
+      {
+        onSuccess: () => {
+          formRef.current?.reset()
+          setCategoryId("")
+          setDueDate(new Date())
+        },
+      }
+    )
   }
 
   return (

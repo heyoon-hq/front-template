@@ -21,17 +21,19 @@ export function CategoryForm() {
   const formRef = useRef<HTMLFormElement>(null)
   const [selectedColor, setSelectedColor] = useState(PRESET_COLORS[6])
 
-  async function handleSubmit(formData: FormData) {
+  function handleSubmit(formData: FormData) {
     const name = formData.get("name") as string
     if (!name) return
 
-    await createMutation.mutateAsync({
-      name,
-      color: selectedColor,
-    })
-
-    formRef.current?.reset()
-    setSelectedColor(PRESET_COLORS[6])
+    createMutation.mutate(
+      { name, color: selectedColor },
+      {
+        onSuccess: () => {
+          formRef.current?.reset()
+          setSelectedColor(PRESET_COLORS[6])
+        },
+      }
+    )
   }
 
   return (
