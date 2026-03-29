@@ -1,4 +1,4 @@
-import { z } from "zod/v4"
+import { z } from "@/lib/zod-config"
 
 export const createCategorySchema = z.object({
   name: z

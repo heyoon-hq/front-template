@@ -1,4 +1,4 @@
-import { z } from "zod/v4"
+import { z } from "@/lib/zod-config"
 import { createTodoSchema, updateTodoSchema } from "@/lib/validations/todo"
 
 // Request DTOs (기존 스키마 재사용)

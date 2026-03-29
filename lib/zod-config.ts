@@ -58,3 +58,6 @@ z.config({
     return undefined
   },
 })
+
+export { z }
+export type { z as ZodType } from "zod/v4"
