@@ -30,7 +30,7 @@ server/
 lib/
   validations/{feature}.ts        # Zod 기본 스키마 (DTO에서 재사용)
   api/                            # API 응답 포맷 유틸
-    response.ts                   # createApiResponse, createErrorResponse
+    response.ts                   # ApiResponse.success, ApiResponse.error
     error-handler.ts              # handleApiError
   utils.ts                        # cn 등 공유 유틸
   zod-config.ts                   # Zod 커스텀 에러 메시지 (한국어)

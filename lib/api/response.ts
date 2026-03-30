@@ -1,4 +1,4 @@
-export type ApiResponse<T> = {
+export type ApiSuccessResponse<T> = {
   success: true
   data: T
 }
@@ -8,10 +8,9 @@ export type ApiErrorResponse = {
   error: string
 }
 
-export function createApiResponse<T>(data: T): ApiResponse<T> {
-  return { success: true, data }
-}
+export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse
 
-export function createErrorResponse(error: string): ApiErrorResponse {
-  return { success: false, error }
+export const ApiResponse = {
+  success: <T>(data: T): ApiSuccessResponse<T> => ({ success: true, data }),
+  error: (error: string): ApiErrorResponse => ({ success: false, error }),
 }

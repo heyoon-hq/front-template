@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { createErrorResponse } from "./response"
+import { ApiResponse } from "./response"
 
 export function handleApiError(
   error: unknown,
@@ -7,5 +7,5 @@ export function handleApiError(
   status = 500
 ) {
   const message = error instanceof Error ? error.message : defaultMessage
-  return NextResponse.json(createErrorResponse(message), { status })
+  return NextResponse.json(ApiResponse.error(message), { status })
 }
