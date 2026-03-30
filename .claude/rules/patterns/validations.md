@@ -9,13 +9,13 @@ paths:
 - 파일명: `{feature}.ts` (kebab-case)
 - 스키마명: camelCase + Schema (`createTodoSchema`)
 - 타입명: PascalCase + Input (`CreateTodoInput`)
-- `import { z } from "zod/v4"` (v4 전용)
+- `import { z } from "@/lib/zod-config"` (한국어 에러 메시지 설정 포함, `zod/v4` 직접 import 금지)
 - 에러 메시지: 한국어
 
 ## 코드 예시
 
 ```typescript
-import { z } from "zod/v4"
+import { z } from "@/lib/zod-config"
 
 export const createFooSchema = z.object({
   title: z.string().min(1, "제목을 입력해주세요").max(200, "200자 이내로 입력해주세요"),

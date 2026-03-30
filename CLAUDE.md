@@ -23,10 +23,11 @@
 ## 프로젝트 개요
 - Next.js 16 (App Router), React 19, TypeScript 5, Tailwind CSS v4
 - Prisma 6 + PostgreSQL (Docker), Zod v4, pnpm
-- UI: shadcn/ui — 서버 상태: TanStack Query + Server Actions
-- **읽기**: Page → Server Actions(read) → initialData props → useQuery
-- **쓰기**: useMutation → Server Actions → invalidateQueries
-- Zod safeParse로 Server Actions 입력 검증
+- UI: shadcn/ui — 서버 상태: TanStack Query + API Routes
+- **SSR 초기 데이터**: Page → Server Actions(read) → initialData props → useQuery
+- **CSR 읽기/쓰기**: hooks → fetch("/api/...") → Controller → Service → Prisma
+- **계층 구조**: API Route → Controller(HTTP) → Service(비즈니스) → Prisma
+- Zod safeParse는 Service 계층(DTO)에서 수행
 
 ## 개발 명령어
 ```bash
@@ -46,7 +47,7 @@ npx tsc --noEmit              # 타입 체크
 | 문서 | 설명 |
 |------|------|
 | [rules/structure.md](.claude/rules/structure.md) | 폴더 구조, 파일 배치 규칙 |
-| [rules/recipe.md](.claude/rules/recipe.md) | 기능 구현 순서 (7단계), 데이터 흐름 |
+| [rules/recipe.md](.claude/rules/recipe.md) | 기능 구현 순서 (10단계), 데이터 흐름 |
 | [rules/coding-standards.md](.claude/rules/coding-standards.md) | 네이밍, 임포트, 금지 항목 |
 | [rules/verification.md](.claude/rules/verification.md) | 작업 후 필수 체크, 품질 셀프체크 |
 
@@ -57,6 +58,9 @@ npx tsc --noEmit              # 타입 체크
 | [patterns/page.md](.claude/rules/patterns/page.md) | `app/**` | Page 컴포넌트 패턴 |
 | [patterns/components.md](.claude/rules/patterns/components.md) | `components/**` | 컴포넌트 접미사, shadcn/ui |
 | [patterns/hooks.md](.claude/rules/patterns/hooks.md) | `hooks/**` | TanStack Query 훅 패턴 |
-| [patterns/server-actions.md](.claude/rules/patterns/server-actions.md) | `server/actions/**` | Server Actions + ActionResult |
+| [patterns/server-actions.md](.claude/rules/patterns/server-actions.md) | `server/actions/**` | Server Actions (SSR 초기 데이터용) |
+| [patterns/api-routes.md](.claude/rules/patterns/api-routes.md) | `app/api/**` | API Route 패턴 (Controller 위임) |
+| [patterns/controllers.md](.claude/rules/patterns/controllers.md) | `server/controllers/**` | Controller 패턴 (Service 호출 + 응답 포맷) |
+| [patterns/services.md](.claude/rules/patterns/services.md) | `server/services/**`, `server/dto/**` | Service 계층 + DTO 패턴 |
 | [patterns/validations.md](.claude/rules/patterns/validations.md) | `lib/validations/**` | Zod 스키마 패턴 |
 | [patterns/prisma.md](.claude/rules/patterns/prisma.md) | `prisma/**` | Prisma 모델, 멀티파일 스키마 |

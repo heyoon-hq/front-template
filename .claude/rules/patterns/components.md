@@ -9,7 +9,7 @@ paths:
 
 | 접미사 | S/C | 역할 | 생성 조건 |
 |--------|:---:|------|-----------|
-| `-form` | Client | 입력 → create/update Action | 생성/수정 기능 있으면 |
+| `-form` | Client | 입력 → mutation 훅으로 create/update | 생성/수정 기능 있으면 |
 | `-item` | Client | 개별 항목 CRUD 상호작용 | 목록 + 수정/삭제 있으면 |
 | `-list` | S/C | 목록 표시. 필터 있으면 `-filtered-list` | 목록 있으면 |
 | `-filter`, `-select` | Client | 제어 컴포넌트 (value+onChange, 자체 state 없음) | 필터/선택 UI 있으면 |
@@ -35,18 +35,18 @@ paths:
 - 미설치 시: `pnpm dlx shadcn@latest add {컴포넌트}`
 
 ## 데이터 흐름
-- Page에서 read 함수 호출 → props로 전달
-- Form/Item에서 Server Actions 직접 import하여 호출
+- Page에서 Server Actions(read) 호출 → initialData props로 전달
+- Form/Item에서 mutation 훅 사용 (`useCreateFoo`, `useUpdateFoo`, `useDeleteFoo`)
 - 부모→자식 콜백: `on{Event}` props (예: `onComplete`)
-- 실시간 필요 시: initialData → useQuery로 관리
+- initialData → useQuery로 CSR 관리, mutation → invalidateQueries로 캐시 갱신
 
 ## 핵심 예시: Form
 
 ```typescript
 "use client"
 
-import { useRef, useState } from "react"
-import { createFoo } from "@/server/actions/foo"
+import { useRef } from "react"
+import { useCreateFoo } from "@/hooks/use-foos"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
@@ -55,24 +55,32 @@ type FooFormProps = {
 }
 
 export function FooForm({}: FooFormProps) {
+  const createMutation = useCreateFoo()
   const formRef = useRef<HTMLFormElement>(null)
-  const [error, setError] = useState<string | null>(null)
 
-  async function handleSubmit(formData: FormData) {
-    setError(null)
-    const result = await createFoo(formData)
-    if (result.success) {
-      formRef.current?.reset()
-    } else {
-      setError(result.error)
-    }
+  function handleSubmit(formData: FormData) {
+    const title = formData.get("title") as string
+    if (!title) return
+
+    createMutation.mutate(
+      { title },
+      {
+        onSuccess: () => {
+          formRef.current?.reset()
+        },
+      }
+    )
   }
 
   return (
     <form ref={formRef} action={handleSubmit}>
       <Input type="text" name="title" placeholder="입력..." />
-      <Button type="submit">추가</Button>
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      <Button type="submit" disabled={createMutation.isPending}>
+        {createMutation.isPending ? "..." : "추가"}
+      </Button>
+      {createMutation.error && (
+        <p className="text-sm text-destructive">{createMutation.error.message}</p>
+      )}
     </form>
   )
 }

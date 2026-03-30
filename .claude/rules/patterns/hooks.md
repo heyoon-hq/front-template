@@ -15,23 +15,42 @@ paths:
 - 상세: `["{feature}", { id }]` (개별 항목)
 - 무한 스크롤: `["{feature}", "infinite"]`
 
-## Server Actions 연동
-- queryFn/mutationFn에 Server Actions 직접 전달
-- `/api/` 라우트 별도 생성하지 않음
+## API Route 연동
+- queryFn/mutationFn에서 `fetch("/api/{feature}")` 호출
+- Server Actions 직접 호출하지 않음 (SSR initialData 전달은 Page에서 담당)
+- 응답 타입: `ApiResponse<T>` (`{ success: true, data: T }`)
 
 ## initialData 패턴
 ```
 Page (Server Component) → Server Action 호출 → props로 전달
-  → Client Component → useQuery({ queryFn, initialData })
+  → Client Component → useQuery({ queryFn: fetch("/api/..."), initialData })
 ```
 
 ## invalidation 체인
 - 연관 쿼리 함께 무효화 (예: todo 삭제 → `["categories"]` invalidate)
 - onSettled에서 invalidate (성공/실패 모두)
 
-## 타입 추론
+## 타입 정의
+- 훅 파일 내에서 필요한 타입을 직접 정의
+- API 응답 타입도 함께 정의
+
 ```typescript
-type Foo = Awaited<ReturnType<typeof getFoos>>[number]
+type Todo = {
+  id: string
+  title: string
+  completed: boolean
+  // ...
+}
+
+type ApiResponse<T> = {
+  success: true
+  data: T
+}
+
+type ApiErrorResponse = {
+  success: false
+  error: string
+}
 ```
 
 ## 코드 예시
@@ -40,29 +59,47 @@ type Foo = Awaited<ReturnType<typeof getFoos>>[number]
 "use client"
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { getFoos, createFoo, updateFoo, deleteFoo } from "@/server/actions/foo"
 
-type Foo = Awaited<ReturnType<typeof getFoos>>[number]
+type Foo = {
+  id: string
+  title: string
+  createdAt: Date | string
+}
 
-// Read — initialData로 SSR 데이터 활용
+type ApiResponse<T> = { success: true; data: T }
+type ApiErrorResponse = { success: false; error: string }
+
+// Read — fetch + initialData로 SSR 데이터 활용
 export function useFoos(initialData?: Foo[]) {
   return useQuery({
     queryKey: ["foos"],
-    queryFn: () => getFoos(),
+    queryFn: async () => {
+      const res = await fetch("/api/foos")
+      if (!res.ok) throw new Error("Failed to fetch foos")
+      const json: ApiResponse<Foo[]> = await res.json()
+      return json.data
+    },
     initialData,
   })
 }
 
-// Create — 생성 후 목록 갱신
+// Create — JSON body + invalidation
 export function useCreateFoo() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (formData: FormData) => createFoo(formData),
-    onSuccess: (result) => {
-      if (result.success) {
-        queryClient.invalidateQueries({ queryKey: ["foos"] })
-      }
+    mutationFn: async (data: { title: string }) => {
+      const res = await fetch("/api/foos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      })
+      const json: ApiResponse<Foo> | ApiErrorResponse = await res.json()
+      if (!json.success) throw new Error(json.error)
+      return json.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["foos"] })
     },
   })
 }
@@ -72,7 +109,17 @@ export function useUpdateFoo() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: Parameters<typeof updateFoo>[0]) => updateFoo(data),
+    mutationFn: async (data: { id: string; title?: string }) => {
+      const { id, ...updateData } = data
+      const res = await fetch(`/api/foos/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updateData),
+      })
+      const json: ApiResponse<Foo> | ApiErrorResponse = await res.json()
+      if (!json.success) throw new Error(json.error)
+      return json.data
+    },
     onMutate: async (newData) => {
       await queryClient.cancelQueries({ queryKey: ["foos"] })
       const previous = queryClient.getQueryData<Foo[]>(["foos"])
@@ -102,7 +149,14 @@ export function useDeleteFoo() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: { id: string }) => deleteFoo(data),
+    mutationFn: async (data: { id: string }) => {
+      const res = await fetch(`/api/foos/${data.id}`, {
+        method: "DELETE",
+      })
+      const json: ApiResponse<null> | ApiErrorResponse = await res.json()
+      if (!json.success) throw new Error(json.error)
+      return json.data
+    },
     onMutate: async (deletedData) => {
       await queryClient.cancelQueries({ queryKey: ["foos"] })
       const previous = queryClient.getQueryData<Foo[]>(["foos"])
@@ -128,4 +182,3 @@ export function useDeleteFoo() {
 ## 레퍼런스
 - `hooks/use-todos.ts`
 - `hooks/use-categories.ts`
-

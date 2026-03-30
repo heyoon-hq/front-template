@@ -1,6 +1,5 @@
 ---
 description: 코딩 표준 - 네이밍, 임포트, 금지 항목
-alwaysApply: true
 ---
 
 # 코딩 표준
