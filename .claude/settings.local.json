@@ -19,7 +19,8 @@
       "WebSearch",
       "WebFetch(domain:www.prisma.io)",
       "Bash(curl -s http://localhost:3001/api/categories)",
-      "Bash(curl -s -X POST http://localhost:3001/api/categories )"
+      "Bash(curl -s -X POST http://localhost:3001/api/categories )",
+      "WebFetch(domain:support.claude.com)"
     ],
     "deny": [],
     "ask": []
