@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { CategoryService } from "@/server/services/category.service"
 import { ApiResponse } from "@/lib/api/response"
+import { handleApiError } from "@/lib/api/error-handler"
 
 export const CategoryController = {
   async getAll() {
@@ -8,12 +9,7 @@ export const CategoryController = {
       const categories = await CategoryService.findAll()
       return NextResponse.json(ApiResponse.success(categories), { status: 200 })
     } catch (error) {
-      return NextResponse.json(
-        ApiResponse.error(
-          error instanceof Error ? error.message : "서버 오류"
-        ),
-        { status: 500 }
-      )
+      return handleApiError(error, "서버 오류", 500)
     }
   },
 
@@ -23,12 +19,7 @@ export const CategoryController = {
       const category = await CategoryService.create(body)
       return NextResponse.json(ApiResponse.success(category), { status: 201 })
     } catch (error) {
-      return NextResponse.json(
-        ApiResponse.error(
-          error instanceof Error ? error.message : "생성 실패"
-        ),
-        { status: 400 }
-      )
+      return handleApiError(error, "생성 실패", 400)
     }
   },
 
@@ -38,12 +29,7 @@ export const CategoryController = {
       const category = await CategoryService.update(id, body)
       return NextResponse.json(ApiResponse.success(category), { status: 200 })
     } catch (error) {
-      return NextResponse.json(
-        ApiResponse.error(
-          error instanceof Error ? error.message : "수정 실패"
-        ),
-        { status: 404 }
-      )
+      return handleApiError(error, "수정 실패", 404)
     }
   },
 
@@ -52,12 +38,7 @@ export const CategoryController = {
       await CategoryService.delete(id)
       return NextResponse.json(ApiResponse.success(null), { status: 200 })
     } catch (error) {
-      return NextResponse.json(
-        ApiResponse.error(
-          error instanceof Error ? error.message : "삭제 실패"
-        ),
-        { status: 404 }
-      )
+      return handleApiError(error, "삭제 실패", 404)
     }
   },
 }

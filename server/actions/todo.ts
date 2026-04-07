@@ -1,9 +1,8 @@
 "use server"
 
+import type { ActionResult } from "@/server/actions/types"
 import { TodoService } from "@/server/services/todo.service"
 import { deleteTodoSchema } from "@/lib/validations/todo"
-
-type ActionResult = { success: true } | { success: false; error: string }
 
 export async function getTodos() {
   return TodoService.findAll()

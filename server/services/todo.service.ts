@@ -16,6 +16,7 @@ export const TodoService = {
         include: { category: true },
       })
     } catch (error) {
+      console.error("[TodoService.findAll]", error)
       throw new Error("할 일 목록을 조회할 수 없습니다")
     }
   },
@@ -36,6 +37,7 @@ export const TodoService = {
         include: { category: true },
       })
     } catch (error) {
+      console.error("[TodoService.create]", error)
       throw new Error("할 일을 생성할 수 없습니다")
     }
   },
@@ -59,6 +61,7 @@ export const TodoService = {
         include: { category: true },
       })
     } catch (error) {
+      console.error("[TodoService.update]", error)
       throw new Error("할 일을 찾을 수 없습니다")
     }
   },
@@ -69,6 +72,7 @@ export const TodoService = {
         where: { id },
       })
     } catch (error) {
+      console.error("[TodoService.delete]", error)
       throw new Error("할 일을 찾을 수 없습니다")
     }
   },

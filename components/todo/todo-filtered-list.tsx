@@ -15,7 +15,7 @@ type Category = {
   createdAt: Date | string
 }
 
-type TodoFilter = "all" | "active" | "completed"
+type TodoFilterValue = "all" | "active" | "completed"
 
 type TodoWithCategory = {
   id: string
@@ -40,19 +40,22 @@ type TodoFilteredListProps = {
 export function TodoFilteredList({ initialTodos, initialCategories }: TodoFilteredListProps) {
   const { data: todos = [] } = useTodos(initialTodos)
   const { data: categories = [] } = useCategories(initialCategories)
-  const [filter, setFilter] = useState<TodoFilter>("all")
+  const [filter, setFilter] = useState<TodoFilterValue>("all")
   const [categoryFilter, setCategoryFilter] = useState<string>("all")
 
   const completedCount = todos.filter((t) => t.completed).length
   const activeCount = todos.length - completedCount
 
-  const filteredTodos = todos.filter((todo) => {
-    if (filter === "active" && todo.completed) return false
-    if (filter === "completed" && !todo.completed) return false
-    if (categoryFilter === "none" && todo.categoryId !== null) return false
-    if (categoryFilter !== "all" && categoryFilter !== "none" && todo.categoryId !== categoryFilter) return false
-    return true
-  })
+  const filteredTodos = useMemo(() =>
+    todos.filter((todo) => {
+      if (filter === "active" && todo.completed) return false
+      if (filter === "completed" && !todo.completed) return false
+      if (categoryFilter === "none" && todo.categoryId !== null) return false
+      if (categoryFilter !== "all" && categoryFilter !== "none" && todo.categoryId !== categoryFilter) return false
+      return true
+    }),
+    [todos, filter, categoryFilter]
+  )
 
   const groupedTodos = useMemo(() => {
     const groups = new Map<string, TodoWithCategory[]>()

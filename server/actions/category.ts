@@ -1,9 +1,8 @@
 "use server"
 
+import type { ActionResult } from "@/server/actions/types"
 import { CategoryService } from "@/server/services/category.service"
 import { deleteCategorySchema } from "@/lib/validations/category"
-
-type ActionResult = { success: true } | { success: false; error: string }
 
 export async function getCategories() {
   return CategoryService.findAll()
@@ -18,14 +17,10 @@ export async function createCategory(formData: FormData): Promise<ActionResult> 
   }
 
   try {
-    const data: { name: string; color?: string } = {
+    await CategoryService.create({
       name: String(nameValue),
-    }
-    if (colorValue) {
-      data.color = String(colorValue)
-    }
-
-    await CategoryService.create(data)
+      ...(colorValue ? { color: String(colorValue) } : {}),
+    })
 
     return { success: true }
   } catch (error) {

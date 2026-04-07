@@ -4,4 +4,5 @@ model Category {
   color     String   @default("#6B7280")
   todos     Todo[]
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
